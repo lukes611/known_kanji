@@ -18,7 +18,7 @@ function outputUi(knownKanjis, kanjiData) {
     const knownSet = new Set(knownKanjis);
     const allKanji = [
         ...knownKanjis.map(k => ({ x: k, known: true })),
-        ...Object.keys(kanjiData).filter(k => !knownSet.has(k)).map(x => ({ x, known: false })),
+        ...Object.keys(kanjiData).filter(k => !knownSet.has(k)).map(x => ({ x: x[0], known: false })),
     ];
     // console.log(allKanji)
     const container = document.createElement('div');
@@ -29,6 +29,10 @@ function outputUi(knownKanjis, kanjiData) {
         const colsE = document.createElement('div');
         colsE.className = 'cols';
         container.appendChild(colsE);
+        const underRow = document.createElement('div');
+        underRow.style.display = 'none';
+        let visible = '';
+        container.appendChild(underRow);
         for (const x of group) {
             const e = document.createElement('div');
             e.classList.add('kanji');
@@ -36,6 +40,17 @@ function outputUi(knownKanjis, kanjiData) {
             !x.known && e.classList.add('unknown-kanji');
             e.innerHTML = x.x;
             colsE.appendChild(e);
+            e.onclick = () => {
+                if (visible === x.x) {
+                    underRow.style.display = 'none';
+                    visible = '';
+                    return;
+                }
+                underRow.style.display = 'block';
+                const data = kanjiData[x.x] ?? ['', '', ''];
+                underRow.innerHTML = `${x.x}: ${data[0]} (${data[1]})`;
+                visible = x.x;
+            };
         }
     }
 } 
